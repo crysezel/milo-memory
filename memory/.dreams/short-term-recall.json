@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "updatedAt": "2026-04-16T19:47:15.871Z",
+  "entries": {
+    "memory:memory/2026-04-16.md:1:6": {
+      "key": "memory:memory/2026-04-16.md:1:6",
+      "path": "memory/2026-04-16.md",
+      "startLine": 1,
+      "endLine": 6,
+      "source": "memory",
+      "snippet": "# 2026-04-16 - WhatsApp gateway connected successfully. - Cemal chose the assistant name Milo. - Milo vibe selected implicitly as warm, calm, dependable.",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.6400013749981094,
+      "maxScore": 0.6400013749981094,
+      "firstRecalledAt": "2026-04-16T19:47:15.871Z",
+      "lastRecalledAt": "2026-04-16T19:47:15.871Z",
+      "queryHashes": [
+        "1d5f9cd1496c"
+      ],
+      "recallDays": [
+        "2026-04-16"
+      ],
+      "conceptTags": [
+        "gateway",
+        "whatsapp",
+        "connected",
+        "successfully",
+        "cemal",
+        "chose",
+        "the",
+        "assistant"
+      ]
+    }
+  }
+}
