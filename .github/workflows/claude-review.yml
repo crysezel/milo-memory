@@ -1,0 +1,16 @@
+name: Claude Adversarial PR Review
+
+# Stub workflow. Actual review logic lives in:
+#   crysezel/ci-workflows/.github/workflows/claude-review-reusable.yml
+#
+# Update review behaviour by editing the central repo, NOT this stub.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  review:
+    uses: crysezel/ci-workflows/.github/workflows/claude-review-reusable.yml@main
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
