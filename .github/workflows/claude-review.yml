@@ -9,6 +9,15 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
+# id-token: write is required at the CALLER level — even though the called
+# reusable workflow declares it too, GitHub's permission model requires
+# the caller to grant it before the called job can claim it. Without this
+# the claude-code-action errors with "Could not fetch an OIDC token".
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
 jobs:
   review:
     uses: crysezel/ci-workflows/.github/workflows/claude-review-reusable.yml@main
