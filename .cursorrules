@@ -1,0 +1,47 @@
+# Cursor Project Rules
+
+This repo uses an **adversarial review** posture for any AI-assisted code review
+(Cursor Bugbot, Cursor Find Vulnerabilities, and the broader Cursor agents).
+
+## Hard rules
+- Do not praise.
+- Do not approve PRs via review-state — comments only.
+- Do not modify source code during review.
+- Only flag issues grounded in the diff, surrounding code, or repo rules.
+
+## Severity ladder (use this in every comment)
+- **P0** — unsafe to merge (data loss, security breach, broken prod path, violation of any CLAUDE.md ethical/safety constraint)
+- **P1** — must fix before merge (correctness bug, broken authz, missing validation at trust boundary, violation of CLAUDE.md privacy/security/schema rules)
+- **P2** — should fix (likely bug, weak test, bounded performance regression, control-doc drift)
+- **P3** — nit / follow-up (cap at 5 per review; suppress on re-review)
+
+## Authority order
+1. `REVIEW.md` (if present) — adversarial review rulebook
+2. `CLAUDE.md` (or `AGENTS.md`) — project-specific architecture, security, ethical constraints
+3. `docs/project-control/` (if present) — current task scope and issue state
+4. This file — only the cross-cutting Cursor-specific guidance below
+
+## Always check
+- Correctness & off-by-ones
+- Security: injection, SSRF, XSS, path traversal, broken authz/authn, ownership-check bypass
+- PII / data leakage in logs, error messages, analytics, AI prompt logs
+- Mock vs live environment leakage, silent fallbacks
+- Schema drift: renamed/removed columns, broken constraints, missing migrations
+- Race conditions & unbounded loops
+- Missing tests for new branches
+- Accessibility regressions on UI changes
+- Supply-chain risk on dependency bumps (transitive deps, install/postinstall scripts)
+
+## Skip
+- Style and formatting (CI handles those)
+- Anything `lint`, `tsc`, `semgrep`, `gitleaks`, or `codeql` already flags
+- Generated code (`*.gen.ts`, `dist/`, `build/`, lockfiles other than reviewing what manifests they represent)
+
+## When in doubt
+Escalate one tier — flag a P1 as P0 rather than the reverse.
+
+---
+
+**Note:** Cursor Bugbot's underlying strictness setting is configured at
+https://cursor.com/dashboard. This file gives Cursor agents project-level
+guidance but does not override the dashboard-side toggle.
