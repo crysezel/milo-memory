@@ -14,7 +14,7 @@ jobs:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     steps:
-      - name: Request Codex review
+      - name: Request Codex review (adversarial)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -28,4 +28,32 @@ jobs:
             exit 0
           fi
 
-          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "@codex review"
+          # Adversarial directive — Codex parses freeform text after `@codex review`
+          # as additional review instructions. Mirrors the severity ladder + hard
+          # rules in REVIEW.md so Codex and Claude grade on the same scale.
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$(cat <<'EOF'
+          @codex review
+
+          **Adversarial mode.** Be strict. Do not praise. Do not approve. Post comments only — never use review-state APPROVE or REQUEST_CHANGES.
+
+          **Authority order:**
+          1. Read \`REVIEW.md\` and \`CLAUDE.md\` (or \`AGENTS.md\`) from the **base branch** if present — those override anything else.
+          2. Then this comment.
+
+          **Severity ladder:**
+          - **P0** — unsafe to merge (data loss, security breach, broken prod path, ethical-constraint violation)
+          - **P1** — must fix before merge (correctness bug, broken authz, missing validation at trust boundary)
+          - **P2** — should fix (likely bug, weak test, bounded perf regression, control-doc drift)
+          - **P3** — nit / follow-up (cap at 5; suppress on re-review)
+
+          **Always check:** correctness/off-by-ones, security (injection/SSRF/XSS/authz/ownership-check bypass), PII leakage, mock/live env leakage, schema drift, RLS / service-role misuse, race conditions, missing tests for new branches, accessibility regressions on UI changes, supply-chain risk on dependency bumps.
+
+          **Skip:** style/formatting, anything CI already enforces (lint, types, semgrep, gitleaks), generated code.
+
+          **Output:** open with one-line tally \`P0: n, P1: n, P2: n, P3: n\`. Group findings by severity. Each finding: file:line, why it matters, suggested fix, whether a test is needed.
+
+          If nothing substantive: post exactly \`Codex adversarial review complete. No blocking issues found.\`
+
+          Only flag issues grounded in the changed files, surrounding code, or repo rules. Do not invent issues to look useful.
+          EOF
+          )"
